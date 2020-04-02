@@ -1,0 +1,31 @@
+name: Lint & Static scan
+on: 
+  push:
+    branches:
+      - dev
+      - master
+      - release/*
+    pull_request:
+      branches:
+        - dev
+        - master
+
+jobs:
+  build:
+    name: Bandit scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Python security check using Bandit
+        uses: Krocodial/bandit-report-artifacts@master
+        with:
+          project_path: '.'
+          ignore_failure: 'false'
+          security_level: 'll'
+          security_confidence: 'ii'
+      - name: Security report artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: Static scan report
+          path: output/security_report.txt
